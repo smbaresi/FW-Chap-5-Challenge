@@ -6,21 +6,6 @@ const authorized = require("./authorized");
 const path = require("path");
 const port = 3000;
 
-// app.use([authorized])
-
-// app.use(function (req, res, next) {
-//     let userName = store.get("username") ||"none"
-//     fs.readFile("./public/static.json", (err, data) => {
-//         let d = JSON.parse(data)
-//         if (userName == d["username"]) {
-//             next()
-//         } else {
-//             // res.redirect("/login") 
-//             next()
-//         }
-//     })  
-// })
-
 app.set('view engine', 'ejs');
 app.use(express.static("./public"))
 app.use(express.json())
@@ -29,7 +14,12 @@ app.use(express.urlencoded({
 }))
 
 app.get("/", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "./public/fw-chap-3-challenge/html/index.html"))
+    let f = store.get("username") || "login"
+    if (f != "login") {
+        f = f.userName
+    }
+    res.render("home", { 
+        username: f})
 })
 
 app.post("/login", (req, res,) => {
@@ -48,15 +38,21 @@ app.post("/login", (req, res,) => {
 })
 
 app.get("/login", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "./public/login/index.html "))
+    res.render("login")
 })
 
 app.get("/home", [authorized], (req, res) => {
-    res.sendFile(path.resolve(__dirname, "./public/fw-chap-3-challenge/html/home.html"))
+    let f = store.get("username") || "login"
+    if (f != "login") {
+        f = f.userName
+    }
+    res.render("home", { 
+        username: f})
 })
 
+
 app.get("/suit", [authorized], (req, res) => {
-    res.sendFile(path.resolve(__dirname, "./public/fw-chap-4-challenge/html/index.html"))
+    res.render("suit")
 })
 
 app.all("*", (req, res) => {
